@@ -1,6 +1,6 @@
 const modals = () => {
-
-    function bindModal(triggerSelector, modalSelector, closeSelector, closeClickOverlay = true) {
+    let btnPressed  = false;
+    function bindModal(triggerSelector, modalSelector, closeSelector, destroy = false) {
         const trigger = document.querySelectorAll(triggerSelector),
             modal = document.querySelector(modalSelector),
             close = document.querySelector(closeSelector),
@@ -12,8 +12,13 @@ const modals = () => {
                 if (e.target) {
                     e.preventDefault();
                 }
+                btnPressed = true;
+                if (destroy){
+                    item.remove();
+                }
                 windows.forEach(item => {
                     item.style.display = "none";
+                    item.classList.add('animated', 'fadeIn');
                 });
                 modal.style.display = "block";
                 document.body.style.overflow = "hidden";
@@ -33,7 +38,7 @@ const modals = () => {
         });
 
         modal.addEventListener('click', (e) => {
-            if (e.target === modal && closeClickOverlay) {
+            if (e.target === modal) {
                 windows.forEach(item => {
                     item.style.display = "none";
                 });
@@ -46,13 +51,27 @@ const modals = () => {
 
     function showModalByTime(selector, time) {
         setTimeout(function () {
-            document.querySelector(selector).style.display = "block";
-            document.body.style.overflow = "hidden";
+            let display;
+
+            document.querySelectorAll('[data-modal]').forEach(item => {
+                if (getComputedStyle(item).display !== 'none') {
+                    display = 'block';
+                }
+            });
+
+            if (!display) {
+                document.querySelector(selector).style.display = "block";
+                document.body.style.overflow = "hidden";
+                let scroll = calcScroll();
+                document.body.style.marginRight = `${scroll}px`;
+            }
+
         }, time);
     }
-    function calcScroll(){
+
+    function calcScroll() {
         let div = document.createElement('div');
-        div.style.width ="50px";
+        div.style.width = "50px";
         div.style.height = "50px";
         div.style.overflowY = "scroll";
         div.style.visibility = "hidden";
@@ -62,13 +81,22 @@ const modals = () => {
         return scrollWidth;
     }
 
-    bindModal('.popup_engineer_btn', '.popup_engineer', '.popup_engineer .popup_close');
-    bindModal(".phone_link", '.popup', '.popup .popup_close');
-    showModalByTime('.popup', 60000);
-    bindModal('.popup_calc_btn','.popup_calc','.popup_calc_close');
-    bindModal('.popup_calc_button','.popup_calc_profile','.popup_calc_profile_close', false);
-    bindModal('.popup_calc_profile_button','.popup_calc_end','.popup_calc_end_close', false);
+    function openByScroll(selector) {
+        window.addEventListener('scroll', () => {
+            let scrollHeight = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
 
+            if (!btnPressed && (window.pageYOffset + document.documentElement.clientHeight >= scrollHeight)) {
+                document.querySelector(selector).click();
+            }
+        });
+    }
+
+    bindModal('.button-design', '.popup-design', '.popup-design .popup-close');
+    bindModal('.button-consultation', '.popup-consultation', '.popup-consultation .popup-close');
+    bindModal('.fixed-gift', '.popup-gift', '.popup-gift .popup-close', true);
+
+    openByScroll('.fixed-gift');
+    showModalByTime('.popup-consultation', 60000);
 };
 
 export default modals;
