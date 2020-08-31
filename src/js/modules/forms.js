@@ -1,5 +1,7 @@
 // import checkNumInputs from "./checkNumInputs";
-//ddfs
+
+import {postData} from "../services/requests";
+
 const forms = (state) => {
 
     const form = document.querySelectorAll('form'),
@@ -20,14 +22,14 @@ const forms = (state) => {
 
     // checkNumInputs('input[name="user_phone"]');
 
-    const postData = async (url, data) => {
-        // document.querySelector('.status').textContent = message.loading;
-        let res = await fetch(url, {
-            method: 'POST',
-            body: data
-        });
-        return await res.text();
-    };
+    // const postData = async (url, data) => {
+    //     // document.querySelector('.status').textContent = message.loading;
+    //     let res = await fetch(url, {
+    //         method: 'POST',
+    //         body: data
+    //     });
+    //     return await res.text();
+    // };
 
     const clearInputs = () => {
         inputs.forEach(item => {
